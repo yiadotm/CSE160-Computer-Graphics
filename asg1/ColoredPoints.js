@@ -81,6 +81,7 @@ function addActionsForHtmlUI() {
     document.getElementById('green').onclick = function(){ g_selectColor=[0.0,1.0,0.0,1.0]; };
     document.getElementById('red').onclick   = function(){ g_selectColor=[1.0,0.0,0.0,1.0]; };
     document.getElementById('clearButton').onclick = function() {g_shapesList=[]; renderAllShapes();};
+    document.getElementById("drawButton").onclick = function() {drawDaisy();}
 
     document.getElementById('pointButton').onclick = function() { g_selectedType=POINT};
     document.getElementById('triButton').onclick = function() { g_selectedType=TRIANGLE};
@@ -219,4 +220,51 @@ function sendTextToHTML(text, htmlID) {
     return;
   }
   htmlElm.innerHTML = text;
+}
+
+function drawDaisy() {
+  renderAllShapes();
+  gl.uniform4f(u_FragColor, 0.600, 0.741, 0.839, 1.0); // soft blue
+  // head
+  drawTriangle( [-3/10, -1/10, -3/10, 4/10, 3/10, 4/10] );
+  drawTriangle( [-3/10, -1/10, 3/10, 4/10, 3/10, -1/10] );
+  drawTriangle( [-2/10, 4/10, -2/10, 9/10, -0.5/10, 9/10] );
+  drawTriangle( [-2/10, 4/10, -0.5/10, 4/10, -0.5/10, 9/10] );
+
+  // ears
+  drawTriangle( [2/10, 4/10, 2/10, 9/10, 0.5/10, 9/10] );
+  drawTriangle( [2/10, 4/10, 0.5/10, 4/10, 0.5/10, 9/10] );
+
+  // body
+  drawTriangle( [-3/10, -1/10, 3/10, -1/10, -3/10, -6/10] );
+  drawTriangle( [-3/10, -6/10, 3/10, -1/10, 3/10, -6/10] );
+
+  // arms
+  gl.uniform4f(u_FragColor, 0.698, 0.847, 0.949, 1.0); // light blue
+  drawTriangle( [-4/10, -1/10, -4/10, -2.5/10, -1/10, -1/10] );
+  drawTriangle( [-4/10, -2.5/10, -1/10, -2.5/10, -1/10, -1/10] );
+
+  drawTriangle( [4/10, -1/10, 4/10, -2.5/10, 1/10, -1/10] );
+  drawTriangle( [4/10, -2.5/10, 1/10, -2.5/10, 1/10, -1/10] );
+
+  // legs
+  drawTriangle( [-4/10, -4/10, -4/10, -7/10, -1/10, -4/10] );
+  drawTriangle( [-4/10, -7/10, -1/10, -7/10, -1/10, -4/10] );
+
+  drawTriangle( [4/10, -4/10, 4/10, -7/10, 1/10, -4/10] );
+  drawTriangle( [4/10, -7/10, 1/10, -7/10, 1/10, -4/10] );
+
+  // eyes
+  gl.uniform4f(u_FragColor, 0.0, 0.0, 0.0, 1.0); // black
+  drawTriangle( [-2/10, 1/10, -2/10, 2/10, -1/10, 2/10] );
+  drawTriangle( [-2/10, 1/10, -1/10, 1/10, -1/10, 2/10] );
+
+  drawTriangle( [2/10, 1/10, 2/10, 2/10, 1/10, 2/10] );
+  drawTriangle( [2/10, 1/10, 1/10, 1/10, 1/10, 2/10] );
+  
+  // mouth
+  drawTriangle( [0, 0, -0.3/10, 0.3/10, 0, 0.3/10] );
+  drawTriangle( [0, 0, 0.3/10, 0.3/10, 0, 0.3/10] );
+
+
 }
