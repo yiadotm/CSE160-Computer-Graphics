@@ -74,6 +74,7 @@ const CIRCLE = 2;
 let g_selectColor=[1.0,1.0,1.0,1.0]; // Default color is white
 let g_selectedSize=5; // Default size is 5
 let g_selectedType=POINT; // Default shape is point
+let g_segments=10;
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
 
@@ -95,6 +96,7 @@ function addActionsForHtmlUI() {
 
     // Size Slider Event
     document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
+    document.getElementById('segments').addEventListener('mouseup', function() {g_segments = this.value});
 
 
 
@@ -147,6 +149,7 @@ function click(ev) {
   point.position = [x, y];
   point.color = g_selectColor.slice();
   point.size = g_selectedSize;
+  point.segments = g_segments;
   g_shapesList.push(point);
 
 
@@ -167,7 +170,7 @@ function click(ev) {
   // } else {                         // Others
   //   g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
   // }
-
+  console.log("segments", g_segments)
   console.log(g_shapesList); // Debug: Check the contents of g_shapesList
   console.log(typeof point, point instanceof Point); // Debug: Ensure it's a Point instance
 
