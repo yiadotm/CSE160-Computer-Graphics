@@ -103,7 +103,7 @@ function addActionsForHtmlUI() {
     document.addEventListener("click", logKey);
 
     function logKey(e) {
-      log.textContent = `The shift key is pressed: ${e.shiftKey}`;
+      // log.textContent = `The shift key is pressed: ${e.shiftKey}`;
       if (e.shiftKey) {
         g_hiddenAnimation = true;
       }
