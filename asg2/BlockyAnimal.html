@@ -10,23 +10,60 @@
     Please use a browser that supports "canvas"
     </canvas>
     <!-- <img id="image" src="bunny_asg1.jpg" alt="Image" width="400" height="400"> -->
-    <p id="numdot"> XXX </p>
+    <p id="log"></p>
+    <div>
+      Performance:     
+      <p id="numdot"> XXX </p>
+
+    </div>
 
     <p>
       Camera Angle <input type="range" min="0" max="360" value="15" class="slider" id="angleSlide">
     </p>
+    <p>
+      Animate Everything: 
+      <button type = "button" id = "everythingAnimationOnButton">ON</button>
+      <button type = "button" id = "everythingAnimationOffButton">OFF</button>
+    </p>
 
     <p>
-      Left Ear <input type="range" min="0" max="35" value="13" class="slider" id="leftEarSlide">
+      Left Ear <input type="range" min="0" max="15" value="0" class="slider" id="leftEarSlide">
     </p>
     <p>
-      Right Ear <input type="range" min="-35" max="0" value="-15" class="slider" id="rightEarSlide">
+      Animation: 
+      <button type = "button" id = "leftEarAnimationOnButton">ON</button>
+      <button type = "button" id = "leftEarAnimationOffButton">OFF</button>
+    </p>
+    <p>
+      Right Ear <input type="range" min="-15" max="0" value="0" class="slider" id="rightEarSlide">
+    </p>
+    <p>
+      Animation: 
+      <button type = "button" id = "rightEarAnimationOnButton">ON</button>
+      <button type = "button" id = "rightEarAnimationOffButton">OFF</button>
     </p>
     <p>
       Left Arm <input type="range" min="0" max="10" value="0" class="slider" id="leftArmSlide">
     </p>
     <p>
-      Right Arm <input type="range" min="-10" max="0" value="0" class="slider" id="rightArmSlide">
+      Animation: 
+      <button type = "button" id = "leftArmAnimationOnButton">ON</button>
+      <button type = "button" id = "leftArmAnimationOffButton">OFF</button>
+    </p>
+    <p>
+      Left Hand <input type="range" min="0" max="10" value="0" class="slider" id="leftHandSlide">
+    </p>
+
+    <p>
+      Right Arm <input type="range" min="-13" max="0" value="0" class="slider" id="rightArmSlide">
+    </p>
+    <p>
+      Animation: 
+      <button type = "button" id = "rightArmAnimationOnButton">ON</button>
+      <button type = "button" id = "rightArmAnimationOffButton">OFF</button>
+    </p>
+    <p>
+      Right Hand <input type="range" min="-13" max="0" value="0" class="slider" id="rightHandSlide">
     </p>
 
 
@@ -41,7 +78,7 @@
     <script src="Triangle.js"></script>
     <script src="Circle.js"></script>
     <script src="Cube.js"></script>
-    <script src="Point.js"></script>
+    <script src="Cone.js"></script>
 
   </body>
 </html>

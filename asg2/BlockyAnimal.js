@@ -77,32 +77,68 @@ function connectVariablesToGLSL() {
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 }
 
-// Constants
-const POINT = 0;
-const TRIANGLE = 1;
-const CIRCLE = 2;
+
 // Globals related to UI elements
-let g_selectColor=[1.0,1.0,1.0,1.0]; // Default color is white
-let g_selectedSize=5; // Default size is 5
-let g_selectedType=POINT; // Default shape is point
-let g_globalAngle = 0;
-let leftEarSlider = 13;
-let rightEarSlider = -15;
+let g_globalAnglex = 0;
+let g_globalAngley = 0;
+let leftEarSlider = 0;
+let rightEarSlider = 0;
 let leftArmSlider = 0;
+let leftHandSlider = 0;
 let rightArmSlider = 0;
+let rightHandSlider = 0;
+let leftMouthSlider = 0;
+let rightMouthSlider = 0;
+let g_animationLeftEar = false;
+let g_animationRightEar = false;
+let g_animationLeftArm = false;
+let g_animationRightArm = false;
+let g_animateAll = false;
+let g_hiddenAnimation = false;
+
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
 
-    // Button Events (Shape Type)
+    let log = document.querySelector("#log");
+    document.addEventListener("click", logKey);
+
+    function logKey(e) {
+      log.textContent = `The shift key is pressed: ${e.shiftKey}`;
+      if (e.shiftKey) {
+        g_hiddenAnimation = true;
+      }
+
+      
+    }
     
     // Size Slider Event
-    document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAngle = this.value; renderAllShapes(); });
+    document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAnglex = this.value; renderScene(); });
+
+    document.getElementById('everythingAnimationOnButton').onclick = function() {g_animateAll = true;};
+    document.getElementById('everythingAnimationOffButton').onclick = function() {g_animateAll = false; g_hiddenAnimation = false;};
 
     // Animation
-    document.getElementById('leftEarSlide').addEventListener('mousemove', function() {leftEarSlider = this.value; renderAllShapes(); });
-    document.getElementById('rightEarSlide').addEventListener('mousemove', function() {rightEarSlider = this.value; renderAllShapes(); });
-    document.getElementById('leftArmSlide').addEventListener('mousemove', function() {leftArmSlider = this.value; renderAllShapes(); });
-    document.getElementById('rightArmSlide').addEventListener('mousemove', function() {rightArmSlider = this.value; renderAllShapes(); });
+    document.getElementById('leftEarSlide').addEventListener('mousemove', function() {leftEarSlider = this.value; renderScene(); });
+    document.getElementById('leftEarAnimationOnButton').onclick = function() {g_animationLeftEar = true;};
+    document.getElementById('leftEarAnimationOffButton').onclick = function() {g_animationLeftEar = false;};
+
+
+    document.getElementById('rightEarSlide').addEventListener('mousemove', function() {rightEarSlider = this.value; renderScene(); });
+    document.getElementById('rightEarAnimationOnButton').onclick = function() {g_animationRightEar = true;};
+    document.getElementById('rightEarAnimationOffButton').onclick = function() {g_animationRightEar = false;};
+
+    
+    document.getElementById('leftArmSlide').addEventListener('mousemove', function() {leftArmSlider = this.value; renderScene(); });
+    document.getElementById('leftHandSlide').addEventListener('mousemove', function() {leftHandSlider = this.value; renderScene(); });
+    document.getElementById('leftArmAnimationOnButton').onclick = function() {g_animationLeftArm = true;};
+    document.getElementById('leftArmAnimationOffButton').onclick = function() {g_animationLeftArm = false;};
+
+    
+    document.getElementById('rightArmSlide').addEventListener('mousemove', function() {rightArmSlider = this.value; renderScene(); });
+    document.getElementById('rightHandSlide').addEventListener('mousemove', function() {rightHandSlider = this.value; renderScene(); });
+    document.getElementById('rightArmAnimationOnButton').onclick = function() {g_animationRightArm = true;};
+    document.getElementById('rightArmAnimationOffButton').onclick = function() {g_animationRightArm = false;};
+
 }
 
 function main() {
@@ -123,47 +159,69 @@ function main() {
 
   // Clear <canvas>
   // gl.clear(gl.COLOR_BUFFER_BIT);
-  renderAllShapes();
+  // renderScene();
+  requestAnimationFrame(tick);
+}
+
+var g_startTime = performance.now()/1000.0;
+var g_seconds = performance.now()/1000.0 - g_startTime;
+function tick() {
+  g_seconds = performance.now()/1000.0 - g_startTime;
+  
+  // console.log(g_seconds);
+  updateAnimations();
+  hiddenAnimation();
+
+
+  renderScene();
+  requestAnimationFrame(tick);
+}
+
+function hiddenAnimation() {
+  
+  if (g_hiddenAnimation) {
+    console.log("here ", g_hiddenAnimation);
+    leftMouthSlider = (15*Math.sin(5*g_seconds));
+    rightMouthSlider = (15*Math.sin(5*g_seconds));
+
+  }
+
+
+
+}
+
+function updateAnimations() {
+  if (g_animationLeftEar) {
+    leftEarSlider = (-5*Math.sin(3*g_seconds));
+  }
+  if (g_animationRightEar) {
+    rightEarSlider = (5*Math.sin(3*g_seconds));
+  }
+  if (g_animationLeftArm) {
+    leftArmSlider = (10*Math.sin(2*g_seconds));
+  }
+  if (g_animationRightArm) {
+    rightArmSlider = (-10*Math.sin(2*g_seconds));
+  }
+  if (g_animateAll) {
+    leftEarSlider = (-5*Math.sin(3*g_seconds));
+    rightEarSlider = (5*Math.sin(3*g_seconds));
+    leftArmSlider = (10*Math.sin(2*g_seconds));
+    rightArmSlider  = (-10*Math.sin(2*g_seconds));
+  }
 }
 
 
-
-var g_shapesList = []; // Store the shapes
-
-// var g_points = [];  // The array for the position of a mouse press
-// var g_colors = [];  // The array to store the color of a point
-// var g_sizes = [];   // The array to store the size of a point
-
 function click(ev) {
   let [x, y] = convertCoordinatesEventToGL(ev);
-
-  let point;
-  if (g_selectedType == POINT) {
-    point = new Point();
-  }
-  else if (g_selectedType == TRIANGLE) {
-    point = new Triangle();
-  }
-  else {
-    point = new Circle();
-  }
-
-
-  // Create and store the new point
-  point.position = [x, y];
-  point.color = g_selectColor.slice();
-  point.size = g_selectedSize;
-  // point.segments = g_segments;
-  g_shapesList.push(point);
+  g_globalAnglex = x *100;
+  g_globalAngley = y *100;
 
 
 
-  // console.log("segments", g_segments)
-  console.log(g_shapesList); // Debug: Check the contents of g_shapesList
-  console.log(typeof point, point instanceof Point); // Debug: Ensure it's a Point instance
 
   // Draw every shape that is supposed to be in the canvas
-  renderAllShapes();
+  renderScene();
   
 }
 
@@ -181,13 +239,14 @@ function convertCoordinatesEventToGL(ev) {
 
 
 // Draw every shape that is supposed to be in the canvas
-function renderAllShapes() {
+function renderScene() {
 
   // Check the time at the start of this function
   var startTime = performance.now();
 
   // Pass the matrix to u_ModelMatrix attribute
-  var globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+  var globalRotMat = new Matrix4().rotate(g_globalAnglex, 0, 1, 0);
+  globalRotMat = globalRotMat.rotate(g_globalAngley,1,0,0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
   
   // Clear <canvas>
@@ -227,14 +286,15 @@ function renderAllShapes() {
   // Ears
   var leftEar = new Cube();
   leftEar.color = BEIGE;
-  leftEar.matrix.translate(-0.15, .30, 0.3);
+  leftEar.matrix.translate(-0.16, .30, 0.3);
+  // leftEar.matrix.rotate(180,0,1,0);
   leftEar.matrix.rotate(leftEarSlider,0,0,1);
   leftEar.matrix.scale(0.25, 0.50, 0.20);
   leftEar.render();
 
   var rightEar = new Cube();
   rightEar.color = BEIGE;
-  rightEar.matrix.translate( 0.10, .30, 0.3);
+  rightEar.matrix.translate( 0.11, .30, 0.3);
   rightEar.matrix.rotate(rightEarSlider,0,0,1);
   rightEar.matrix.scale(0.25, 0.50, 0.20);
   rightEar.render();
@@ -266,7 +326,7 @@ function renderAllShapes() {
   var mouth1 = new Cube();
   mouth1.color = [0.0, 0.0, 0.0, 1.0];
   mouth1.matrix.translate(0.01, -0.13, -.05);
-  mouth1.matrix.rotate(0,1,0,0);
+  mouth1.matrix.rotate(leftMouthSlider,1,0,0);
   mouth1.matrix.rotate(20, 0, 0, 1);
   mouth1.matrix.scale(0.20, 0.05, 0.05);
   mouth1.render();
@@ -275,7 +335,7 @@ function renderAllShapes() {
   var mouth2 = new Cube();
   mouth2.color = [0.0, 0.0, 0.0, 1.0];
   mouth2.matrix.translate(-.01, -0.06, -.05);
-  mouth2.matrix.rotate(0,1,0,0);
+  mouth2.matrix.rotate(rightMouthSlider,1,0,0);
   mouth2.matrix.rotate(-20, 0, 0, 1);
   mouth2.matrix.scale(0.20, 0.05, 0.05);
   mouth2.render();
@@ -291,12 +351,13 @@ function renderAllShapes() {
   // Arms
   var leftArm = new Cube();
   leftArm.color = GREY;
-  leftArm.matrix.translate(-0.38, -0.4200, 0.20);
+  leftArm.matrix.translate(-0.18, -0.2200, 0.20);
   // leftArm.matrix.rotate(20,0,0,1);
+  leftArm.matrix.rotate(180,0,0,1);
   leftArm.matrix.rotate(leftArmSlider,0,0,1);
+  var leftArmMatrix = new Matrix4(leftArm.matrix);
   leftArm.matrix.scale(0.25, 0.20, 0.30);
   leftArm.render();
-  var leftArmMatrix = new Matrix4(leftArm.matrix);
 
   // var leftHand = new Cube();
   // leftHand.color = BEIGE;
@@ -309,47 +370,59 @@ function renderAllShapes() {
   var leftHand = new Cube();
   leftHand.matrix = leftArmMatrix;
   leftHand.color = BEIGE;
-  leftHand.matrix.translate(-0.5, 0, .1);
+  leftHand.matrix.translate(0.15, 0.049, 0.05);
   // leftHand.matrix.rotate(20,0,0,1);
-  leftHand.matrix.rotate(leftArmSlider,0,0,1);
-  leftHand.matrix.scale(1, 0.8, 0.8);
+  leftHand.matrix.rotate(leftHandSlider,1,0,0);
+  leftHand.matrix.scale(0.25, 0.15, 0.20);
+  // leftHand.matrix.scale(1, 0.8, 0.8);
   leftHand.render();
 
 
-  var rightArm = new Cube();
-  rightArm.color = GREY;
-  rightArm.matrix.translate( 0.35, -0.4200, 0.20);
+  var rightArmShirt = new Cube();
+  rightArmShirt.color = GREY;
+  rightArmShirt.matrix.translate( 0.33, -0.4200, 0.20);
   // rightArm.matrix.rotate(-20,0,0,1);
-  leftHand.matrix.rotate(rightArmSlider,0,0,1);
-  rightArm.matrix.scale(0.25, 0.20, 0.30);
-  rightArm.render();
-  var rightArmMatrix = new Matrix4(rightArm.matrix);
+  rightArmShirt.matrix.rotate(rightArmSlider,0,0,1);
+  var rightArmMatrix = new Matrix4(rightArmShirt.matrix);
+  rightArmShirt.matrix.scale(0.25, 0.20, 0.30);
+  rightArmShirt.render();
 
-  var rightArm = new Cube();
-  rightArm.matrix = rightArmMatrix;
-  rightArm.color = BEIGE;
-  rightArm.matrix.translate( 0.5, 0, 0.1);
-  // rightArm.matrix.rotate(-20,0,0,1);
-  leftHand.matrix.rotate(rightArmSlider,0,0,1);
-  rightArm.matrix.scale(1, 0.80, 0.80);
-  rightArm.render();
+  var rightHand = new Cube();
+  rightHand.matrix = rightArmMatrix;
+  rightHand.color = BEIGE;
+  rightHand.matrix.translate( 0.17, 0.003, 0.05);
+  // rightHand.matrix.rotate(-20,0,0,1);
+  rightHand.matrix.rotate(rightHandSlider,1,0,0);
+  var rightHandMatrix = new Matrix4(rightHand.matrix);
+  rightHand.matrix.scale(0.25, 0.15, 0.20);
+  // rightArm.matrix.scale(1, 0.80, 0.80);
+  rightHand.render();
 
   // Legs
   var leftLeg = new Cube();
   leftLeg.color = BEIGE;
-  leftLeg.matrix.translate(-0.19, -0.7, -0.2);
+  leftLeg.matrix.translate(-0.19, -0.69, -0.2);
   leftLeg.matrix.rotate(0,1,0,0);
   leftLeg.matrix.scale(0.21, 0.20, 0.40);
   leftLeg.render();
 
+
+
   var rightLeg = new Cube();
   rightLeg.color = BEIGE;
-  rightLeg.matrix.translate( 0.19, -.7, -.2);
+  rightLeg.matrix.translate( 0.18, -.69, -.2);
   rightLeg.matrix.rotate(0,1,0,0);
   rightLeg.matrix.scale(0.21, 0.20, 0.40);
   rightLeg.render();
 
 
+  var cone = new Cone();
+  // cone.matrix = rightArmMatrix;
+  cone.color = [0.56, 0.61, 0.78, 1.0]; 
+  cone.matrix.translate(0.1, -0.5, -0.05); // Position the cone
+  // cone.matrix.translate(0.9, 0, 0); // Position the cone
+  cone.matrix.scale(0.2, 0.3, 0.2);  // Scale the cone
+  cone.render();
 
 
 

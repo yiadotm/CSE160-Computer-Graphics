@@ -6,7 +6,7 @@ class Cube {
     }
 
     render() {
-
+        
         var rgba = this.color;
 
         // Pass the color of a point to a u_FragColor variable
