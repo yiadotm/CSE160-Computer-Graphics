@@ -89,12 +89,14 @@ let rightArmSlider = 0;
 let rightHandSlider = 0;
 let leftMouthSlider = 0;
 let rightMouthSlider = 0;
+let treeSlider = 0;
 let g_animationLeftEar = false;
 let g_animationRightEar = false;
 let g_animationLeftArm = false;
 let g_animationRightArm = false;
 let g_animateAll = false;
 let g_hiddenAnimation = false;
+let g_animationTree = false;
 
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
@@ -139,6 +141,9 @@ function addActionsForHtmlUI() {
     document.getElementById('rightArmAnimationOnButton').onclick = function() {g_animationRightArm = true;};
     document.getElementById('rightArmAnimationOffButton').onclick = function() {g_animationRightArm = false;};
 
+    document.getElementById('treeSlide').addEventListener('mousemove', function() {treeSlider = this.value; renderScene(); });
+    document.getElementById('treeAnimationOnButton').onclick = function() {g_animationTree = true;};
+    document.getElementById('treeAnimationOffButton').onclick = function() {g_animationTree = false;};
 }
 
 function main() {
@@ -183,6 +188,7 @@ function hiddenAnimation() {
     console.log("here ", g_hiddenAnimation);
     leftMouthSlider = (15*Math.sin(5*g_seconds));
     rightMouthSlider = (15*Math.sin(5*g_seconds));
+    treeSlider = (10*Math.sin(2*g_seconds));
 
   }
 
@@ -203,11 +209,15 @@ function updateAnimations() {
   if (g_animationRightArm) {
     rightArmSlider = (-10*Math.sin(2*g_seconds));
   }
+  if (g_animationTree) {
+    treeSlider = (10*Math.sin(2*g_seconds));
+  }
   if (g_animateAll) {
     leftEarSlider = (-5*Math.sin(3*g_seconds));
     rightEarSlider = (5*Math.sin(3*g_seconds));
     leftArmSlider = (10*Math.sin(2*g_seconds));
     rightArmSlider  = (-10*Math.sin(2*g_seconds));
+    treeSlider = (10*Math.sin(2*g_seconds));
   }
 }
 
@@ -373,6 +383,7 @@ function renderScene() {
   leftHand.matrix.translate(0.15, 0.049, 0.05);
   // leftHand.matrix.rotate(20,0,0,1);
   leftHand.matrix.rotate(leftHandSlider,1,0,0);
+  var leftHandMatrix = new Matrix4(leftHand.matrix);
   leftHand.matrix.scale(0.25, 0.15, 0.20);
   // leftHand.matrix.scale(1, 0.8, 0.8);
   leftHand.render();
@@ -416,12 +427,23 @@ function renderScene() {
   rightLeg.render();
 
 
+  var stump = new Cube();
+  stump.matrix = leftHandMatrix;
+  stump.color = [0.38, 0.29, 0.24, 1];
+  stump.matrix.translate(0.35, 0.15, 0.05);
+  stump.matrix.rotate(180, 0, 0, 1);
+  stump.matrix.rotate(treeSlider, 1, 0, 0);
+  var stumpMatrix = new Matrix4(stump.matrix);
+  stump.matrix.scale(0.1, 0.3, 0.1);
+  stump.render();
+
   var cone = new Cone();
-  // cone.matrix = rightArmMatrix;
-  cone.color = [0.56, 0.61, 0.78, 1.0]; 
-  cone.matrix.translate(0.1, -0.5, -0.05); // Position the cone
-  // cone.matrix.translate(0.9, 0, 0); // Position the cone
-  cone.matrix.scale(0.2, 0.3, 0.2);  // Scale the cone
+  cone.matrix = stumpMatrix;
+  cone.color = [0.24, 0.38, 0.34, 1.0]; 
+  cone.matrix.translate(0.05, 0.3, 0.05); // Position the cone
+  // cone.matrix.translate(1.2, 0.1, .4); // Position the cone
+  // cone.matrix.rotate(-90, 0, 0, 1); // Rotate the cone
+  cone.matrix.scale(0.3, .7, 0.3);  // Scale the cone
   cone.render();
 
 
