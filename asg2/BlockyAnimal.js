@@ -361,12 +361,12 @@ function renderScene() {
   // Arms
   var leftArm = new Cube();
   leftArm.color = GREY;
-  leftArm.matrix.translate(-0.18, -0.2200, 0.20);
+  leftArm.matrix.translate(-0.09, -0.2200, 0.20);
   // leftArm.matrix.rotate(20,0,0,1);
   leftArm.matrix.rotate(180,0,0,1);
   leftArm.matrix.rotate(leftArmSlider,0,0,1);
   var leftArmMatrix = new Matrix4(leftArm.matrix);
-  leftArm.matrix.scale(0.25, 0.20, 0.30);
+  leftArm.matrix.scale(0.3, 0.20, 0.30);
   leftArm.render();
 
   // var leftHand = new Cube();
