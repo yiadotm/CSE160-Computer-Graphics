@@ -143,7 +143,7 @@ class Cube {
       //var xy = this.position;
       var rgba = this.color;
       //var size = this.size;
-      gl.uniform1i(u_whichTexture, this.textureNum);
+      gl.uniform1i(u_whichTexture, -2);
     
       gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
     

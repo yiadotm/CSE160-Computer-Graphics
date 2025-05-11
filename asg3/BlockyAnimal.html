@@ -19,17 +19,49 @@
   </head>
 
   <body onload="main()">
-    <canvas id="webgl" width="700" height="700" >
+    <canvas id="webgl" width="1250" height="600" >
       Please use a browser that supports "canvas"
       </canvas>
     <!-- <img id="image" src="bunny_asg1.jpg" alt="Image" width="400" height="400"> -->
      <div class="row">
       <div class="column">
+        <h1>Controls</h1>
+        <hr>
+        W -  Move Forward<br>
+        A -  Move Left<br>
+        S -  Move Backward<br>
+        D -  Move Right<br>
+        Q -  Pan Left <br>
+        E -  Pan Right <br>
+        R - Add Block <br>
+        F - Delete Block <br>
+        <br>
+        Press escape to stop cursor from controlling camera.
+        <br>
+        <br>
+        <!-- Change selected cell to add/delete -->
+         Map is in a 15 x 15 grid. Select cell to add or delete a block. (Pink block is the bottom of the map)<br>
+         Selected Cell: 
+         <label for="cellX">Row:</label>
+        <input type="number" id="cellX" min="0" max="15" value="0">
 
+        <label for="cellY">Col:</label>
+        <input type="number" id="cellY" min="0" max="15" value="0">
+        <button id="addCell">Add Block</button>
+        <button id="deleteCell">Delete Block</button>
+        <br>
+        <br>
+        Bonus: I made a maze where the starting point is the pink block, and the goal is to reach the bunny in the middle.
+        <br>
+        <br>
+        Extra Info: 
+        <br>
+        The bunny's shirt is grey colored, while its skin is made of white birch wood planks.
       </div>
+      
 
       <div class="column">
-        <h1>Controls</h1>
+        <h1>Animations</h1>
         <hr>
         <div class="row">
           <div class="column">
@@ -105,6 +137,8 @@
             </p>
 
           </div>
+
+
 
 
 

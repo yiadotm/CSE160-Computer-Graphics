@@ -56,6 +56,7 @@ var FSHADER_SOURCE =`
   }`
 
 // Global Variables
+let n = 15;
 let canvas;
 let gl;
 let a_Position;
@@ -211,6 +212,10 @@ let g_animationRightArm = false;
 let g_animateAll = false;
 let g_hiddenAnimation = false;
 let g_animationTree = false;
+let g_camera = new Camera();
+let g_selectedCell = { x: 0, y: 0 };
+
+
 
 let BEIGE = [0.87, 0.90, 0.92, 1];
 let GREY = [.52, .52, .52, 1.0];
@@ -261,6 +266,28 @@ function addActionsForHtmlUI() {
     document.getElementById('treeSlide').addEventListener('mousemove', function() {treeSlider = this.value; renderScene(); });
     document.getElementById('treeAnimationOnButton').onclick = function() {g_animationTree = true;};
     document.getElementById('treeAnimationOffButton').onclick = function() {g_animationTree = false;};
+    document.getElementById('addCell').onclick = () => {
+      let x = parseInt(document.getElementById('cellX').value, 10);
+      let y = parseInt(document.getElementById('cellY').value, 10);
+      if (x >= 0 && x < n && y >= 0 && y < n) {
+        g_map[x][y] = 1;
+        renderScene();
+      } else {
+        alert(`Invalid cell: must be 0–${n-1}`);
+      }
+    };
+    
+    document.getElementById('deleteCell').onclick = () => {
+      let x = parseInt(document.getElementById('cellX').value, 10);
+      let y = parseInt(document.getElementById('cellY').value, 10);
+      if (x >= 0 && x < n && y >= 0 && y < n) {
+        g_map[x][y] = 0;
+        renderScene();
+      } else {
+        alert(`Invalid cell: must be 0–${n-1}`);
+      }
+    };
+    
 }
 
 function initTextures() {
@@ -296,7 +323,7 @@ function initTextures() {
   sakuraImg.src = 'images/sakura.jpg';
   woodImg.onload = function() { sendImageToTEXTURE(7, woodImg, u_Sampler7); };
   woodImg.src = 'images/birch.jpg';
-
+  console.log("finished loadTexture");
 
   return true;
 }
@@ -328,7 +355,7 @@ function sendImageToTEXTURE(unit, image, u_Sampler) {
 
   gl.uniform1i(u_Sampler, unit); // Set the texture unit 0 to u_Sampler0
 
-  console.log(`finished loadTexture into TEXTURE${unit}`, { unit, u_Sampler });
+  // console.log(`finished loadTexture into TEXTURE${unit}`, { unit, u_Sampler });
 
 
 }
@@ -343,6 +370,8 @@ function convertCoordinatesEventToGL(ev) {
 
   return([x, y]);
 }
+
+
 function main() {
   setupWebGL();
 
@@ -350,8 +379,13 @@ function main() {
 
   // Set up actions for the HTML UI elements
   addActionsForHtmlUI();
+  // canvas.onmousedown = function(ev) {
+  //   click(ev);                    // set g_selectedCell
+  //   canvas.requestPointerLock();  // then grab the mouse
+  // };
   canvas.onmousedown = () => canvas.requestPointerLock();
-  document.addEventListener("mousemove", mouseLook, false);
+
+    document.addEventListener("mousemove", mouseLook, false);
 
   document.onkeydown = keydown;
   initTextures();
@@ -422,7 +456,6 @@ function updateAnimations() {
   }
 }
 
-let g_camera = new Camera();
 function mouseLook(event) {
   if (document.pointerLockElement !== canvas) return;
   const sensitivity = 0.005;
@@ -446,9 +479,22 @@ function keydown(ev) {
     g_camera.panLeft();
   } else if (ev.keyCode == 69) { //E
     g_camera.panRight();
+  } else if (ev.keyCode === 82) { // 'R'
+    // add a wall
+    if (g_selectedCell.x !== null) {
+      g_map[g_selectedCell.x][g_selectedCell.y] = 1;
+      console.log("r:", g_map[g_selectedCell.x][g_selectedCell.y]);
+    }
+  } else if (ev.keyCode === 70) { // 'F'
+    // delete a wall
+    if (g_selectedCell.x !== null) {
+      g_map[g_selectedCell.x][g_selectedCell.y] = 0;
+      console.log("f:", g_map[g_selectedCell.x][g_selectedCell.y]);
+
+    }
   }
   renderScene();
-  console.log(ev.keyCode);
+  // console.log(ev.keyCode);
 }
 
 let g_map = [
@@ -460,9 +506,9 @@ let g_map = [
   [1, 0, 0, 0, 1, 1, 0, 1, 1, 1,  0,  1,  0,  1,  0, 1],
   [1, 0, 1, 0, 1, 1, 0, 0, 1, 1,  0,  1,  0,  1,  0, 1],
   [1, 0, 1, 0, 0, 1, 1, 1, 1, 1,  0,  1,  0,  1,  0, 1],
-  [1, 0, 1, 0, 0, 1, 0, 0, 0, 0,  0,  1,  0,  1,  0, 1],
-  [1, 0, 1, 0, 1, 1, 0, 0, 0, 0,  1,  0,  0,  0,  0, 1],
-  [1, 0, 1, 0, 0, 1, 0, 0, 0, 0,  1,  0,  1,  0,  0, 1],
+  [1, 0, 1, 0, 0, 1, 3, 3, 3, 3,  0,  1,  0,  1,  0, 1],
+  [1, 0, 1, 0, 1, 1, 3, 3, 3, 3,  1,  0,  0,  0,  0, 1],
+  [1, 0, 1, 0, 0, 1, 3, 3, 3, 3,  1,  0,  1,  0,  0, 1],
   [1, 0, 1, 0, 0, 0, 1, 1, 1, 1,  1,  0,  1,  1,  0, 1],
   [1, 0, 1, 0, 1, 0, 0, 0, 0, 0,  0,  0,  1,  0,  0, 1],
   [1, 0, 1, 0, 1, 0, 0, 0, 0, 0,  0,  0,  1,  0,  1, 1],
@@ -474,6 +520,7 @@ let g_map = [
 function drawMap() {
   let n = g_map.length;
   var wall = new Cube();  
+  var start = new Cube();
   // for (let i = 0; i< 2; i++) {
     for (let x = 0; x < n; x++) {
       for (let y = 0; y < n; y++) {
@@ -483,23 +530,32 @@ function drawMap() {
           wall.color = [0, 1, 1, 1];
           wall.textureNum = 0;
           wall.matrix.setTranslate(0, -.70, 0);
-          wall.matrix.scale(1, 1, 1);
+          wall.matrix.scale(3, 3, 3);
           wall.matrix.translate(x - n/2, 0, y - n/2);
           wall.renderFaster();
-          console.log("wall done: ", x, y);
+          // console.log("wall done: ", x, y);
         }
         if (height == 2) {
-          var start = new Cube();
           start.color = [1, 1, 0, 1];
           start.textureNum = 6;
-          start.matrix.translate(0, -.75, 0);
-          start.matrix.scale(1, 0.2, 1);
+          start.matrix.setTranslate(0, -0.5, 0);
+          start.matrix.scale(3, 0.4, 3);
           start.matrix.translate(x - n/2, 0, y - n/2)
           start.renderFaster();
         }
-        console.log("x: ", x, "y: ", y, "height: ", height);
+        if (height == 3) {
+          start.color = [1, 1, 0, 1];
+          start.textureNum = 4;
+          start.matrix.setTranslate(0, -1.1, 0);
+          start.matrix.scale(3, 0.4, 3);
+          start.matrix.translate(x - n/2, 0, y - n/2)
+          start.renderFaster();
+        }
+
+        // console.log("x: ", x, "y: ", y, "height: ", height);
       }
     }
+    // console.log("rendered map");
   // }
 }
 
@@ -508,14 +564,31 @@ function click(ev) {
   g_globalAnglex = x *100;
   g_globalAngley = y *100;
 
-
-
-
   // Draw every shape that is supposed to be in the canvas
   renderScene();
   
 }
 
+// function click(ev) {
+//   // 1) get normalized GL coords [-1…1]
+//   const [glX, glY] = convertCoordinatesEventToGL(ev);
+
+//   // 2) turn into 0…n−1 indices
+//   const n = g_map.length;                      // your map is n×n :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+//   let i = Math.floor((glX + 1) * n / 2);
+//   let j = Math.floor((glY + 1) * n / 2);
+//   // clamp
+//   i = Math.min(n-1, Math.max(0, i));
+//   j = Math.min(n-1, Math.max(0, j));
+
+//   // 3) stash for later
+//   g_selectedCell.x = i;
+//   g_selectedCell.y = j;
+//   console.log(`Selected cell: [${i},${j}]`);
+
+//   // 4) re-draw so you see any highlight logic
+//   renderScene();
+// }
 
 
 function drawMiffy() {
@@ -705,7 +778,6 @@ function renderScene() {
 
   
   // Clear <canvas>
-  // gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -726,12 +798,13 @@ function renderScene() {
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.renderFaster();
 
-  // draw map
-  drawMap();
+
   
   // draw Miffy
   drawMiffy();
 
+    // draw map
+  drawMap();
 
   
 
