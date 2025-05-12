@@ -1,3 +1,5 @@
+// referenced chatGPT
+
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =`
