@@ -95,6 +95,8 @@ class Cube {
 
 
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        // gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
+
 
         //front
         drawTriangle3DUVNormal([ 0,0,0,  1,1,0,  1,0,0 ], [0,0, 1,1, 1,0], [0,0,-1,0,0,-1,0,0,-1]);

@@ -11,6 +11,7 @@ var VSHADER_SOURCE =`
   varying vec3 v_Normal;
   varying vec4 v_VertPos;
   uniform mat4 u_ModelMatrix;
+  uniform mat4 u_NormalMatrix;
   uniform mat4 u_GlobalRotateMatrix;
   uniform mat4 u_ViewMatrix;
   uniform mat4 u_ProjectionMatrix;
@@ -18,7 +19,8 @@ var VSHADER_SOURCE =`
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     // gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
-    v_Normal = a_Normal;
+    // v_Normal = a_Normal;
+    v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1)));
     v_VertPos = u_ModelMatrix * a_Position;
   }`
 
@@ -114,6 +116,7 @@ let a_UV;
 let a_Normal;
 let u_FragColor;
 let u_ModelMatrix;
+let u_NormalMatrix; 
 let u_GlobalRotateMatrix;
 let u_ViewMatrix;
 let u_ProjectionMatrix;
@@ -183,6 +186,11 @@ function connectVariablesToGLSL() {
   u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   if (!u_ModelMatrix) {
     console.log('Failed to get the storage location of u_ModelMatrix');
+    return;
+  }
+  u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+  if (!u_NormalMatrix) {
+    console.log('Failed to get the storage location of u_NormalMatrix');
     return;
   }
 
@@ -265,6 +273,7 @@ function connectVariablesToGLSL() {
   }
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
+  gl.uniformMatrix4fv(u_NormalMatrix, false, identityM.elements);
 }
 
 
@@ -543,19 +552,6 @@ function keydown(ev) {
     g_camera.panLeft();
   } else if (ev.keyCode == 69) { //E
     g_camera.panRight();
-  } else if (ev.keyCode === 82) { // 'R'
-    // add a wall
-    if (g_selectedCell.x !== null) {
-      g_map[g_selectedCell.x][g_selectedCell.y] = 1;
-      console.log("r:", g_map[g_selectedCell.x][g_selectedCell.y]);
-    }
-  } else if (ev.keyCode === 70) { // 'F'
-    // delete a wall
-    if (g_selectedCell.x !== null) {
-      g_map[g_selectedCell.x][g_selectedCell.y] = 0;
-      console.log("f:", g_map[g_selectedCell.x][g_selectedCell.y]);
-
-    }
   }
   renderScene();
   // console.log(ev.keyCode);
@@ -668,6 +664,7 @@ function drawMiffy(y) {
     body.matrix.translate(-0.2, -0.70 + y, 0.1);
     body.matrix.rotate(0,1,0,0);
     body.matrix.scale(0.60 + s, 0.60 + s, 0.50 + s);
+    body.normalMatrix.setInverseOf(body.matrix).transpose();
     body.render();
 
 
@@ -680,6 +677,7 @@ function drawMiffy(y) {
     // leftEar.matrix.rotate(180,0,1,0);
     leftEar.matrix.rotate(leftEarSlider,0,0,1);
     leftEar.matrix.scale(0.25 + s, 0.50 + s, 0.20 + s);
+    leftEar.normalMatrix.setInverseOf(leftEar.matrix).transpose();
     leftEar.render();
   
     var rightEar = new Cube();
@@ -877,17 +875,18 @@ function renderScene() {
   floor.matrix.translate(0.0, -0.75, 0.0);
   floor.matrix.scale(50,0,50);
   floor.matrix.translate(-0.5, 0, -0.5);
+  floor.normalMatrix.setInverseOf(floor.matrix).transpose();
   floor.render();
 
   // draw sky
   var sky = new Cube();
   sky.color = BLUE;
   sky.textureNum = -2;
-
   if (g_normalOn) sky.textureNum=-3;
   // console.log("sky textureNum: ", sky.textureNum);
   sky.matrix.scale(-10, -10, -10);
   sky.matrix.translate(-0.5, -0.5, -0.5);
+  sky.normalMatrix.setInverseOf(sky.matrix).transpose();
   sky.render();
 
   // draw sphere
@@ -897,6 +896,7 @@ function renderScene() {
   if (g_normalOn) sphere.textureNum=-3;
   sphere.matrix.scale(.5,.5,.5);
   sphere.matrix.translate(0, 0, 5);
+  sphere.normalMatrix.setInverseOf(sphere.matrix).transpose();
   sphere.render();
 
   // pass light position to GLSL
@@ -913,6 +913,7 @@ function renderScene() {
   light.matrix.translate(g_lightPos[0],g_lightPos[1], g_lightPos[2]);
   light.matrix.scale(-.1,-.1,-.1);
   light.matrix.translate(-3,-8, -5);
+  light.normalMatrix.setInverseOf(light.matrix).transpose();
   light.render();
 
   
@@ -922,7 +923,20 @@ function renderScene() {
     // draw map
   // drawMap();
 
-  
+  // // draw bowl
+  // var bowl = new Model(gl, "Bowl.obj");
+  // bowl.color = [0.0, 1.0, 0.0, 1.0];
+  // bowl.matrix.setScale(0.5, 0.5, 0.5);
+  // bowl.matrix.rotate(240, 0,1,0);
+  // bowl.matrix.translate(0, -0.5, 0);
+  // bowl.render();
+
+  // draw teapot
+  // var teapot = new Model(gl, "teapot.obj");
+  // teapot.color = [0.0, 0.0, 1.0, 1.0];
+  // teapot.matrix.setScale(0.5, 0.5, 0.5);
+  // teapot.matrix.rotate(240, 0,1,0);
+  // teapot.render();
 
 
   // Check the time at the end of this function, and show on web page
