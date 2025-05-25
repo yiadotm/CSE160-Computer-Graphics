@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Change a point color</title>
+    <style>
+    .column {
+      float: left;
+      width: 50%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    </style>
+  </head>
+
+  <body onload="main()">
+    <canvas id="webgl" width="1250" height="600" >
+      Please use a browser that supports "canvas"
+      </canvas>
+    <!-- <img id="image" src="bunny_asg1.jpg" alt="Image" width="400" height="400"> -->
+     <div class="row">
+      <div class="column">
+        <h1>Controls</h1>
+        <hr>
+        W -  Move Forward<br>
+        A -  Move Left<br>
+        S -  Move Backward<br>
+        D -  Move Right<br>
+        Q -  Pan Left <br>
+        E -  Pan Right <br>
+
+      <p>
+        Normal: 
+        <button type = "button" id = "normalOn">ON</button>
+        <button type = "button" id = "normalOff">OFF</button>
+      </p>
+
+      <p>
+      Light: 
+      <button type = "button" id = "lightOn">ON</button>
+      <button type = "button" id = "lightOff">OFF</button>
+      </p>
+
+      <p>
+      Light X <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideX">
+      Light Y <input type="range" min="-250" max="250" value="100" class="slider" id="lightSlideY">
+      Light Z <input type="range" min="-250" max="250" value="-200" class="slider" id="lightSlideZ">
+      </p>
+
+      </div>
+      
+
+      <div class="column">
+        <h1>Animations</h1>
+        <hr>
+        <div class="row">
+          <div class="column">
+            <div>
+
+              Performance:     
+              <p id="numdot"> XXX </p>
+              <p>
+               Camera Angle <input type="range" min="0" max="360" value="15" class="slider" id="angleSlide">
+             </p>
+        
+            </div>
+
+            <br>
+
+            <p>
+              Animate Everything: 
+              <button type = "button" id = "everythingAnimationOnButton">ON</button>
+              <button type = "button" id = "everythingAnimationOffButton">OFF</button>
+            </p>
+            <br>
+            <p>
+              Tree <input type="range" min="0" max="30" value="0" class="slider" id="treeSlide">
+            </p>
+            <p>
+              Animation: 
+              <button type = "button" id = "treeAnimationOnButton">ON</button>
+              <button type = "button" id = "treeAnimationOffButton">OFF</button>
+            </p>
+
+          </div>
+
+          <div class="column">
+            <p>
+              Left Ear <input type="range" min="0" max="15" value="0" class="slider" id="leftEarSlide">
+            </p>
+            <p>
+              Animation: 
+              <button type = "button" id = "leftEarAnimationOnButton">ON</button>
+              <button type = "button" id = "leftEarAnimationOffButton">OFF</button>
+            </p>
+            <p>
+              Right Ear <input type="range" min="-15" max="0" value="0" class="slider" id="rightEarSlide">
+            </p>
+            <p>
+              Animation: 
+              <button type = "button" id = "rightEarAnimationOnButton">ON</button>
+              <button type = "button" id = "rightEarAnimationOffButton">OFF</button>
+            </p>
+            <br>
+            <p>
+              Left Arm <input type="range" min="0" max="10" value="0" class="slider" id="leftArmSlide">
+            </p>
+            <p>
+              Animation: 
+              <button type = "button" id = "leftArmAnimationOnButton">ON</button>
+              <button type = "button" id = "leftArmAnimationOffButton">OFF</button>
+            </p>
+            <p>
+              Left Hand <input type="range" min="0" max="10" value="0" class="slider" id="leftHandSlide">
+            </p>
+            <br>
+            <p>
+              Right Arm <input type="range" min="-13" max="0" value="0" class="slider" id="rightArmSlide">
+            </p>
+            <p>
+              Animation: 
+              <button type = "button" id = "rightArmAnimationOnButton">ON</button>
+              <button type = "button" id = "rightArmAnimationOffButton">OFF</button>
+            </p>
+            <p>
+              Right Hand <input type="range" min="-13" max="0" value="0" class="slider" id="rightHandSlide">
+            </p>
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+        <!-- <p id="log"></p> -->
+
+    
+        <br>
+
+
+
+    
+
+      </div>
+     </div>
+
+
+
+
+    <script src="lib/cuon-matrix.js"></script>
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/webgl-debug.js"></script>
+    <script src="lib/cuon-utils.js"></script>
+    <script src="lib/OBJLoader.js"></script>
+    <script src="Camera.js"></script>
+    <script src="World.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Circle.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Cone.js"></script>
+    <script src="Sphere.js"></script>
+    <script src="Model.js"></script>
+
+  </body>
+</html>
