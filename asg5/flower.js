@@ -79,7 +79,7 @@ function main() {
 
         let petalTexture;
         loader.load(
-            'resources/images/sakura.jpg',
+            'resources/images/quartz.jpg',
             (tex) => {
                 
                 tex.flipY = false;                    
@@ -429,15 +429,15 @@ function createFlowers(radius, segments, petalTex) {
         dirLightHelper.update();
 
         // 8c) Update the background texture to fit the canvas size
-		const canvasAspect = canvas.clientWidth / canvas.clientHeight;
-		const imageAspect = bgTexture.image ? bgTexture.image.width / bgTexture.image.height : 1;
-		const aspect = imageAspect / canvasAspect;
+		// const canvasAspect = canvas.clientWidth / canvas.clientHeight;
+		// const imageAspect = bgTexture.image ? bgTexture.image.width / bgTexture.image.height : 1;
+		// const aspect = imageAspect / canvasAspect;
 
-		bgTexture.offset.x = aspect > 1 ? ( 1 - 1 / aspect ) / 2 : 0;
-		bgTexture.repeat.x = aspect > 1 ? 1 / aspect : 1;
+		// bgTexture.offset.x = aspect > 1 ? ( 1 - 1 / aspect ) / 2 : 0;
+		// bgTexture.repeat.x = aspect > 1 ? 1 / aspect : 1;
 
-		bgTexture.offset.y = aspect > 1 ? 0 : ( 1 - aspect ) / 2;
-		bgTexture.repeat.y = aspect > 1 ? 1 : aspect;
+		// bgTexture.offset.y = aspect > 1 ? 0 : ( 1 - aspect ) / 2;
+		// bgTexture.repeat.y = aspect > 1 ? 1 : aspect;
 
         scene.traverse((obj) => {
             if (obj.isMesh) {
