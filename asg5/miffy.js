@@ -30,6 +30,26 @@ function main() {
     // scene.background = new THREE.Color('black'); 
     addRandomHearts(scene, 20);
     addRandomIcos(scene, 20);
+    const checkTexture = setInterval(() => {
+        if (petalTexture) {
+        // STOP checking once we have the texture
+        clearInterval(checkTexture);
+
+        // Build the flower at radius=7, segments=50, using the loaded texture:
+        const flower = createFlowers(7, 50, petalTexture);
+
+        // If you want it lying flat on XZ, rotate around X by –90°:
+        flower.rotation.x = -Math.PI / 2;
+
+        // Slightly lift off the ground so it doesn’t Z-fight:
+        flower.position.set(0, 0.01, 0);
+
+        scene.add(flower);
+        }
+    }, 50);
+
+
+
 
 
     //
@@ -46,9 +66,7 @@ function main() {
         const repeats = planeSize / 2;
         texture.repeat.set(repeats, repeats);
 
-        const bgTexture = loader.load( 'resources/images/sky.jpg' );
-	    bgTexture.colorSpace = THREE.SRGBColorSpace;
-	    scene.background = bgTexture;
+
 
         const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
         const planeMat = new THREE.MeshPhongMaterial({
@@ -58,6 +76,33 @@ function main() {
         const mesh = new THREE.Mesh(planeGeo, planeMat);
         mesh.rotation.x = Math.PI * -0.5; // lay flat
         scene.add(mesh);
+
+        let petalTexture;
+        loader.load(
+            'resources/images/sakura.jpg',
+            (tex) => {
+                
+                tex.flipY = false;                    
+                tex.encoding = THREE.sRGBEncoding;    
+                petalTexture = tex;
+            },
+            undefined,
+            (err) => {
+                console.error('Failed to load petal texture:', err);
+            }
+        );
+
+        const skyLoader = new THREE.CubeTextureLoader();
+        const sky = skyLoader.load([
+        'resources/images/sky.jpg', 
+        'resources/images/sky.jpg', 
+        'resources/images/sky.jpg', 
+        'resources/images/sky.jpg', 
+        'resources/images/sky.jpg', 
+        'resources/images/sky.jpg', 
+        ]);
+        scene.background = sky;
+
     
 
     //
@@ -266,14 +311,14 @@ function main() {
     function createIcoMesh() {
     // ───────────────────────────── geometry ──────────────────────────────
     const radius = 7;
-    const detail = 0; // how many subdivisions; 0 = the basic 20‐face shape
+    const detail = 2; // how many subdivisions; 0 = the basic 20‐face shape
     const geometry = new THREE.IcosahedronGeometry(radius, detail);
 
     // ───────────────────────────── material ──────────────────────────────
     // I sampled the screenshot color and used a hex near rgb(90, 100, 184):
     // which is roughly 0x5A68B8. You can tweak that if you prefer another shade.
     const material = new THREE.MeshPhongMaterial({
-        color: 0x5A68B8,
+        color: 0x899cb0,
         shininess: 50,
         flatShading: true,      // give each face a faceted look
     });
@@ -318,6 +363,44 @@ function main() {
         scene.add(icosa);
     }
     }
+
+
+function createFlowers(radius, segments, petalTex) {
+  const flower = new THREE.Group();
+
+  const baseGeom = new THREE.CircleGeometry(radius, segments);
+
+  const baseMat = new THREE.MeshPhongMaterial({
+    map: petalTex,
+    side: THREE.DoubleSide,  
+    shininess: 30
+  });
+
+  let a = 0;
+  for (let i = 0; i < 5; i++) {
+    const petalGeom = baseGeom.clone();
+    const petalMat = baseMat.clone();
+    const petal = new THREE.Mesh(petalGeom, petalMat);
+
+
+    petal.scale.set(0.5, 1, 1);
+
+    const angle = (i / 5) * Math.PI * 2;
+
+
+    const offset = radius; 
+    const px = Math.cos(angle) * offset;
+    const py = Math.sin(angle) * offset;
+    petal.position.set(px, py, 0 + a);
+
+    petal.rotation.z = angle;
+
+    flower.add(petal);
+    a += 0.01;
+  }
+
+  return flower;
+}
 
 
     //
